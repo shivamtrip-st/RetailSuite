@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+{% include 'header.html' with header_title="Register Now !!" header_subtitle="Register to become a member" %}
+<div class="container">
+    <div class="row">
+        <center>
+            <div class="col-5">
+                <form method="POST" action="{% url 'register' %}">
+                    {% csrf_token %}
+                    <br/><br/>
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-secondary">Register</button>
+                  </form>
+             <br/><br/>
+             <br/><br/>
+             <br/><br/>
+             <br/><br/>
+            </div>
+        </center>
+    </div>
+</div>
+{% endblock%}

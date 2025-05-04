@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block content %}
+{% include 'header.html' with header_title="Payment Successful" header_subtitle="Order Confirmation" %}
+
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <div class="card-body text-center p-5">
+          <div class="mb-4">
+            <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+          </div>
+          <h2 class="card-title mb-4">Payment Successful!</h2>
+          
+          <div class="alert alert-success">
+            Your order has been processed and payment was successful.
+          </div>
+          
+          <div class="row text-start mt-4">
+            <div class="col-md-12">
+              <h5>Order Details</h5>
+              <hr>
+            </div>
+            <div class="col-md-6">
+              <p><strong>Order ID:</strong> {{ order.id }}</p>
+              <p><strong>Payment ID:</strong> {{ session.payment_intent }}</p>
+              <p><strong>Amount Paid:</strong> ${{ session.amount_total|floatformat:2 }}</p>
+            </div>
+            <div class="col-md-6">
+              <p><strong>Payment Status:</strong> <span class="badge bg-success">{{ session.payment_status|title }}</span></p>
+              <p><strong>Order Date:</strong> {{ order.created_at|date:"F j, Y" }}</p>
+              <p><strong>Currency:</strong> {{ session.currency|upper }}</p>
+            </div>
+          </div>
+          
+          <div class="text-start mt-4">
+            <h5>Customer Information</h5>
+            <hr>
+            <p><strong>Name:</strong> {{ session.customer_details.name }}</p>
+            <p><strong>Email:</strong> {{ session.customer_details.email }}</p>
+          </div>
+          
+          <div class="mt-5">
+            <a href="{% url 'order_history' %}" class="btn btn-primary btn-lg">View Your Orders</a>
+           
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

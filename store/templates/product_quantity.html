@@ -1,0 +1,12 @@
+<div class="row justify-content-center">
+    <div class="col-md-2">Quantity :</div>
+    <div class="col-md-2">
+        <div class="input-group input-group-sm">
+            <button class="btn btn-outline-secondary decrease-qty" type="button" data-product-id="{{ product.id }}">-</button>
+            <input type="text" class="form-control text-center qty-cart" id="qty-cart-{{ product.id }}" value="{{ product.quantity }}" data-product-id="{{ product.id }}" data-stock="{{ product.stock_quantity }}">
+            <button class="btn btn-outline-secondary increase-qty" type="button" data-product-id="{{ product.id }}">+</button>
+        </div>
+    </div>
+</div>
+
+<div id="stock-status-{{ product.id }}" class="out-of-stock" style="display:none;"></div>

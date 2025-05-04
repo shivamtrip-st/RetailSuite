@@ -1,0 +1,87 @@
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+  }
+  
+  .rating-group {
+    display: inline-flex;
+    flex-direction: row-reverse;
+    font-size: 1.5rem;
+  }
+  
+  .rating-input {
+    position: absolute !important;
+    left: -9999px !important;
+  }
+  
+  .rating-label {
+    margin: 0 0.2rem;
+    color: #ddd;
+    cursor: pointer;
+  }
+  
+  .rating-input:checked ~ .rating-label {
+    color: #ffb700;
+  }
+  
+  .rating-label:hover,
+  .rating-label:hover ~ .rating-label {
+    color: #ffb700;
+  }
+  
+  .rating-input:checked + .rating-label:hover,
+  .rating-input:checked ~ .rating-label:hover,
+  .rating-input:checked ~ .rating-label:hover ~ .rating-label,
+  .rating-label:hover ~ .rating-input:checked ~ .rating-label {
+    color: #ffb700;
+  }
+  
+  /* Form styling */
+  form .form-control,
+  form select {
+    border: 1px solid #dee2e6;
+  }
+  
+  form textarea {
+    min-height: 120px;
+  }
+  .product-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+  }
+  .card-img {
+    max-height: 300px;
+    object-fit: contain;
+  }
+  .card-img-top {
+    height: 200px;
+    object-fit: contain;
+  }
+
+  .product-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important;
+}
+
+.product-image {
+    height: 200px;
+    object-fit: contain;
+    transition: transform 0.5s ease;
+}
+
+.product-card:hover .product-image {
+    transform: scale(1.05);
+}

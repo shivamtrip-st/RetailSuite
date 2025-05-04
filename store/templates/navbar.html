@@ -1,0 +1,97 @@
+<!-- Navigation-->
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+    <div class="container px-4 px-lg-5">
+        <a class="navbar-brand fw-bold" href="{% url 'home' %}">
+            <i class="bi bi-shop me-2 text-primary"></i>Ecommerce web
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'about' %}">About</a>
+                </li>
+                
+                <li class="nav-item dropdown d-block d-lg-none">
+                    <a class="nav-link dropdown-toggle" id="categoriesDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-grid me-1"></i>Categories
+                    </a>
+                    <ul class="dropdown-menu shadow border-0" aria-labelledby="categoriesDropdown">
+                        <li><a class="dropdown-item {% if not selected_category %}fw-bold bg-light{% endif %}" href="{% url 'home' %}">All Products</a></li>
+                        {% for category in categories %}
+                            <li><a class="dropdown-item {% if selected_category == category.name %}fw-bold bg-light{% endif %}" href="{% url 'home' %}?category={{ category.name }}">{{ category.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                
+                {% if not user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login' %}">Log In</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'register' %}">Register</a>
+                </li>
+                {% else %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-person-circle me-1"></i>Profile
+                    </a>
+                    <ul class="dropdown-menu shadow border-0" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="{% url 'update_user' %}">Update User</a></li>
+                        <li><hr class="dropdown-divider" /></li>
+                        <li><a class="dropdown-item" href="{% url 'update_info' %}">Update Info</a></li>
+                        <li><a class="dropdown-item" href="{% url 'logout' %}">Log Out</a></li>
+                    </ul>
+                </li>
+                {% endif %}
+                {% if user.is_authenticated %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="ordersDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-box-seam me-1"></i>Orders
+                    </a>
+                    <ul class="dropdown-menu shadow border-0" aria-labelledby="ordersDropdown">
+                        {% if user.is_staff %}
+                        <li><a class="dropdown-item" href="{% url 'order_history' %}?filter=unshipped">Unshipped Orders</a></li>
+                        <li><a class="dropdown-item" href="{% url 'order_history' %}?filter=shipped">Shipped Orders</a></li>
+                        <li><hr class="dropdown-divider" /></li>
+                        {% endif %}
+                        <li><a class="dropdown-item" href="{% url 'order_history' %}">My Orders</a></li>
+                    </ul>
+                </li>
+                {% if user.is_staff %}
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"><i class="bi bi-tools me-1"></i>Admin</a>
+                  <ul class="dropdown-menu shadow">
+                    <li><a class="dropdown-item" href="{% url 'inventory_report' %}">Inventory Report</a></li>
+                    <li><a class="dropdown-item" href="{% url 'admin_dashboard' %}">Admin Dashboard</a></li>
+                  </ul>
+                </li>
+                {% endif %}
+                {% endif %}
+            </ul>
+            <div class="col">
+                <div class="d-flex justify-content-end align-items-center gap-3">
+                    <form class="d-flex align-items-center" method="get" action="{% url 'home' %}">
+                        <div class="input-group">
+                            <input class="form-control" type="search" name="query" placeholder="Search products ..." aria-label="Search">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                    <a href="{% url 'cart_summary' %}" class="btn btn-outline-primary position-relative" type="submit">
+                        <i class="bi-cart-fill me-1"></i>
+                        Cart
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cart_quantity">
+                            {{ cart|length }}
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>

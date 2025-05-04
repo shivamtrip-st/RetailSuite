@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+{% include 'header.html' with header_title="Shop in Style" header_subtitle="With this shop homepage template" %}
+<!-- Section-->
+<link href="{% static 'store/css/product.css' %}" rel="stylesheet"/>
+<section class="py-5">
+    <div class="container px-4 px-lg-5 mt-5">
+        <div class="row">
+            <div class="col-lg-3 d-none d-lg-block">
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="bi bi-grid me-2"></i>Categories</h5>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <a href="{% url 'home' %}" class="list-group-item list-group-item-action {% if not selected_category %}fw-bold bg-light{% endif %}">All Products</a>
+                        {% for category in categories %}
+                            <a href="{% url 'home' %}?category={{ category.name|urlencode }}" class="list-group-item list-group-item-action {% if selected_category == category.name %}fw-bold bg-light{% endif %}">{{ category.name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">Filter Products</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="get" action="{% url 'home' %}">
+                            {% if selected_category %}
+                                <input type="hidden" name="category" value="{{ selected_category }}">
+                            {% endif %}
+                            <div class="mb-3">
+                                <label class="form-label">Price Range</label>
+                                <div class="d-flex gap-2">
+                                    <input type="number" class="form-control form-control-sm" name="min_price" placeholder="Min" value="{{ min_price|default:'' }}">
+                                    <input type="number" class="form-control form-control-sm" name="max_price" placeholder="Max" value="{{ max_price|default:'' }}">
+                                </div>
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-sm btn-outline-primary">Apply Filters</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-9">
+                {% if selected_category %}
+                    <div class="mb-4">
+                        <h4>Category: {{ selected_category }} <a href="{% url 'home' %}" class="btn btn-sm btn-outline-secondary ms-2">Clear Filter</a></h4>
+                    </div>
+                {% endif %}
+
+                <div class="d-lg-none mb-4">
+                    <button class="btn btn-outline-primary w-100" type="button" data-bs-toggle="collapse" data-bs-target="#mobileFilters" aria-expanded="false" aria-controls="mobileFilters">
+                        <i class="bi bi-funnel me-2"></i>Filter Products
+                    </button>
+                    
+                    <div class="collapse mt-3" id="mobileFilters">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-body">
+                                <form method="get" action="{% url 'home' %}">
+                                    {% if selected_category %}
+                                        <input type="hidden" name="category" value="{{ selected_category }}">
+                                    {% endif %}
+                                    <div class="mb-3">
+                                        <label class="form-label">Price Range</label>
+                                        <div class="d-flex gap-2">
+                                            <input type="number" class="form-control" name="min_price" placeholder="Min" value="{{ min_price|default:'' }}">
+                                            <input type="number" class="form-control" name="max_price" placeholder="Max" value="{{ max_price|default:'' }}">
+                                        </div>
+                                    </div>
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-primary">Apply Filters</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row gx-4 gx-lg-5 row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-3 justify-content-center">
+                   {% for product in products %}
+                    <div class="col mb-5">
+                        <div class="card h-100 shadow-sm border-0 product-card">
+                             {% if product.is_sale %}
+                             <div class="badge bg-danger text-white position-absolute rounded-pill px-3 py-2" 
+                             style="top: 0.75rem; right: 0.75rem">Sale</div>
+                            {% endif %}
+                            <div class="p-2">
+                                {% if product.image %}
+                                    <img class="card-img-top product-image" src="{{ product.image.url }}" alt="{{ product.name|default:'Product' }}" />
+                                {% else %}
+                                    <img class="card-img-top product-image" src="{% static 'store/img/placeholder.jpg' %}" alt="No image available" />
+                                {% endif %}
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="text-center">
+                                    <h5 class="fw-bold mb-3">{{ product.name }}</h5>
+                                    {% if product.is_sale %}
+                                    <p class="mb-3">
+                                        <span class="text-muted text-decoration-line-through">${{ product.price }}</span>
+                                        &nbsp;
+                                        <span class="text-danger fw-bold">${{ product.sale_price }}</span>
+                                    </p>
+                                    {% else %}
+                                    <p class="fw-bold text-primary mb-3">${{ product.price }}</p>
+                                    {% endif %}
+                                    <p class="text-muted small">{{ product.description }}</p>
+                                </div>
+                            </div>
+                            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                                <div class="text-center">
+                                    <a class="btn btn-primary mt-auto px-4 py-2" href="{% url 'product' product.id %}">View Product</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

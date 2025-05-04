@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+{% include 'header.html' with header_title="Product Detail" header_subtitle="Product Description" %}
+<link href="{% static 'store/css/product.css' %}" rel="stylesheet"/>
+<div class="container">
+    <br/><br/>
+
+    <div class="card mb-3 shadow-sm border-0">
+        <div class="row no-gutters">
+          <div class="col-md-3">
+            <div class="p-3">
+              <img src="{{ product.image.url }}" class="card-img rounded" alt="{{ product.name }}">
+            </div>
+          </div>
+          <div class="col-md-8">
+            <div class="card-body">
+              <h3 class="cardtitle fw-bold mb-3">{{ product.name }}</h3>
+              <p class="card-text text-muted mb-4">{{ product.description }}</p>
+              
+              <div class="mb-3">
+                {% if product.is_sale %}
+                <span class="fs-4">
+                  <strike class="text-muted">${{ product.price }}</strike>
+                  &nbsp;
+                  <span class="text-danger fw-bold">${{ product.sale_price }}</span>
+                </span>
+                {% else %}
+                <span class="fs-4 fw-bold text-primary">${{ product.price }}</span>
+                {% endif %}
+              </div>
+              
+              <div class="mb-4">
+                {% include 'product_quantity.html' with product=product quantities=quantities %}
+              </div>
+              
+              <div class="mt-4">
+                <a href="{% url 'home' %}" class="btn btn-outline-secondary">Home</a>
+                <input type="hidden" id="csrf_token" value="{{ csrf_token }}">
+                <button class="btn btn-primary" type="button" value="{{ product.id }}" id="add-cart" data-url="{% url 'cart_add' %}" data-stock="{{ product.stock_quantity }}">Add To Cart</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+<!-- Customer Reviews Section -->
+<section class="mt-5">
+  <h3 class="mb-4">Customer Reviews</h3>
+
+  {% if reviews %}
+    <div class="row g-4">
+      {% for review in reviews %}
+        <div class="col-md-6">
+          <div class="card h-100 shadow-sm border-0">
+            <div class="card-body">
+              <div class="d-flex align-items-center mb-2">
+                <h5 class="card-title mb-0">{{ review.title }}</h5>
+                <div class="ms-3">
+                  {% for i in "12345" %}
+                    {% if forloop.counter <= review.rating %}
+                      <i class="bi bi-star-fill text-warning"></i>
+                    {% else %}
+                      <i class="bi bi-star text-warning"></i>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              </div>
+              <p class="card-text">{{ review.body|linebreaks }}</p>
+            </div>
+            <div class="card-footer bg-white border-0 d-flex justify-content-between small text-muted">
+              <span>by {{ review.user.username }}</span>
+              <span>{{ review.created_at|date:"M d, Y" }}</span>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-info" role="alert">
+      No reviews yet. Be the first to review this product!
+    </div>
+  {% endif %}
+</section>
+
+<hr class="my-5">
+
+<!--Review Section -->
+<section class="mt-5">
+  <h3 class="mb-4">Write a Review</h3>
+
+  {% if user.is_authenticated %}
+    <form method="POST" class="p-4 border rounded shadow-sm bg-light">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label class="form-label">Rating</label>
+        <div class="star-rating">
+          <div class="rating-group">
+            <input type="radio" id="rating-5" name="rating" value="5" class="rating-input" {% if review_form.rating.value == 5 %}checked{% endif %}>
+            <label for="rating-5" class="rating-label"><i class="bi bi-star-fill"></i></label>
+            
+            <input type="radio" id="rating-4" name="rating" value="4" class="rating-input" {% if review_form.rating.value == 4 %}checked{% endif %}>
+            <label for="rating-4" class="rating-label"><i class="bi bi-star-fill"></i></label>
+            
+            <input type="radio" id="rating-3" name="rating" value="3" class="rating-input" {% if review_form.rating.value == 3 %}checked{% endif %}>
+            <label for="rating-3" class="rating-label"><i class="bi bi-star-fill"></i></label>
+            
+            <input type="radio" id="rating-2" name="rating" value="2" class="rating-input" {% if review_form.rating.value == 2 %}checked{% endif %}>
+            <label for="rating-2" class="rating-label"><i class="bi bi-star-fill"></i></label>
+            
+            <input type="radio" id="rating-1" name="rating" value="1" class="rating-input" {% if review_form.rating.value == 1 %}checked{% endif %}>
+            <label for="rating-1" class="rating-label"><i class="bi bi-star-fill"></i></label>
+          </div>
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Title</label>
+        {{ review_form.title }}
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Review</label>
+        {{ review_form.body }}
+      </div>
+      <button type="submit" class="btn btn-primary">Submit Review</button>
+    </form>
+  {% else %}
+    <div class="alert alert-warning" role="alert">
+      <a href="{% url 'login' %}">Log in</a> to write a review.
+    </div>
+  {% endif %}
+</section>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+<script src="{% static 'store/js/product.js' %}"></script>
+      
+      <!-- Related Products Section -->
+      {% if related_products %}
+      <div class="my-5">
+        <h3 class="mb-4 position-relative pb-2">
+          Related Products
+          <span class="position-absolute bottom-0 start-0" style="width: 50px; height: 2px; background-color: #007bff;"></span>
+        </h3>
+        
+        <div class="row">
+          {% for related in related_products %}
+          <div class="col-md-3 mb-4">
+            <div class="card h-100 shadow-sm border-0 product-card">
+              <div class="position-relative">
+                <img src="{{ related.image.url }}" class="card-img-top p-2" alt="{{ related.name }}">
+                {% if related.is_sale %}
+                <span class="position-absolute top-0 end-0 bg-danger text-white px-2 py-1 m-2 rounded">Sale</span>
+                {% endif %}
+              </div>
+              <div class="card-body text-center">
+                <h5 class="card-title">{{ related.name }}</h5>
+                {% if related.is_sale %}
+                <p class="card-text">
+                  <strike class="text-muted">${{ related.price }}</strike>
+                  <span class="text-danger fw-bold">${{ related.sale_price }}</span>
+                </p>
+                {% else %}
+                <p class="card-text fw-bold">${{ related.price }}</p>
+                {% endif %}
+                <a href="{% url 'product' related.id %}" class="btn btn-secondary">View Details</a>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+      <br/><br/>
+</div>
+
+{% endblock%}

@@ -1,0 +1,253 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<!-- Include Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="fw-bold">Admin Dashboard</h1>
+            <p class="text-muted">Overview of your store performance and statistics</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <div class="btn-group">
+                <button class="btn btn-outline-primary" id="view-today">Today</button>
+                <button class="btn btn-outline-primary active" id="view-week">Week</button>
+                <button class="btn btn-outline-primary" id="view-month">Month</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards Row -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="text-muted mb-1">Total Users</h6>
+                            <h3 class="fw-bold mb-0">{{ total_users }}</h3>
+                            <span class="badge bg-success text-white mt-2">+12% <i class="bi bi-arrow-up"></i></span>
+                        </div>
+                        <div class="rounded-circle bg-primary bg-opacity-10 p-3 d-flex align-items-center justify-content-center">
+                            <i class="bi bi-people-fill text-primary fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="text-muted mb-1">Total Products</h6>
+                            <h3 class="fw-bold mb-0">{{ total_products }}</h3>
+                            <span class="badge bg-success text-white mt-2">+5% <i class="bi bi-arrow-up"></i></span>
+                        </div>
+                        <div class="rounded-circle bg-success bg-opacity-10 p-3 d-flex align-items-center justify-content-center">
+                            <i class="bi bi-box-seam text-success fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="text-muted mb-1">Total Orders</h6>
+                            <h3 class="fw-bold mb-0">{{ total_orders }}</h3>
+                            <span class="badge bg-danger text-white mt-2">-2% <i class="bi bi-arrow-down"></i></span>
+                        </div>
+                        <div class="rounded-circle bg-danger bg-opacity-10 p-3 d-flex align-items-center justify-content-center">
+                            <i class="bi bi-cart-check text-danger fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="text-muted mb-1">Total Reviews</h6>
+                            <h3 class="fw-bold mb-0">{{ total_reviews }}</h3>
+                            <span class="badge bg-success text-white mt-2">+18% <i class="bi bi-arrow-up"></i></span>
+                        </div>
+                        <div class="rounded-circle bg-warning bg-opacity-10 p-3 d-flex align-items-center justify-content-center">
+                            <i class="bi bi-star-fill text-warning fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+     <div class="row g-4 mb-5">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-4">Sales Overview</h5>
+                    <canvas id="salesChart" style="width: 300px; height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-4">Category Distribution</h5>
+                    <canvas id="categoryChart" style="width: 300px; height: 300px;" ></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tables Row -->
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3 border-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="fw-bold mb-0">Recent Orders</h5>
+                        <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="py-3 ps-4">Order ID</th>
+                                    <th class="py-3">Customer</th>
+                                    <th class="py-3">Amount</th>
+                                    <th class="py-3">Status</th>
+                                    <th class="py-3 pe-4">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in recent_orders %}
+                                <tr>
+                                    <td class="ps-4">#{{ order.id }}</td>
+                                    <td>{{ order.user.username }}</td>
+                                    <td>${{ order.total_paid }}</td>
+                                    <td>
+                                        {% if order.is_shipped %}
+                                        <span class="badge rounded-pill bg-success">Shipped</span>
+                                        {% else %}
+                                        <span class="badge rounded-pill bg-warning text-dark">Pending</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="pe-4">{{ order.date_ordered|date:"M d, Y" }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-3">No orders yet.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3 border-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="fw-bold mb-0">Low Stock Products</h5>
+                        <a href="#" class="btn btn-sm btn-outline-primary">View Inventory</a>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="py-3 ps-4">Product</th>
+                                    <th class="py-3">Category</th>
+                                    <th class="py-3">Price</th>
+                                    <th class="py-3 pe-4">Stock</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for product in low_stock_products %}
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="d-flex align-items-center">
+                                            <div class="rounded overflow-hidden me-3" style="width: 40px; height: 40px;">
+                                                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
+                                            </div>
+                                            <span>{{ product.name }}</span>
+                                        </div>
+                                    </td>
+                                    <td>{{ product.category.name }}</td>
+                                    <td>${{ product.price }}</td>
+                                    <td class="pe-4">
+                                        <div class="d-flex align-items-center">
+                                            <span class="badge rounded-pill bg-danger me-2">{{ product.stock_quantity }}</span>
+                                            <a href="#" class="btn btn-sm btn-outline-secondary">Restock</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center py-3">No low-stock products!</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Latest reviews section -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3 border-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="fw-bold mb-0">Latest Reviews</h5>
+                        <a href="#" class="btn btn-sm btn-outline-primary">Manage Reviews</a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <canvas id="reviewSentimentChart" height="200"></canvas>
+                        </div>
+                        <div class="col-md-6">
+                            <canvas id="reviewRatingChart" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Include Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+<script>
+    const chartData = {
+        months: {{ months|safe }},
+        sales_data: {{ sales_data|safe }},
+        {% if visitors_data %}
+        visitors_data: {{ visitors_data|safe }},
+        {% endif %}
+        category_data: {{ category_data|safe }},
+        review_sentiment: {{ review_sentiment|safe }},
+        rating_distribution: {{ rating_distribution|safe }}
+    };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'store/js/admin_dashboard.js' %}"></script>
+{% endblock %}

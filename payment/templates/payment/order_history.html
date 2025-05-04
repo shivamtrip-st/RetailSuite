@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<link href="{% static 'src/css/order_history.css' %}" rel="stylesheet" />
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold">Order History</h2>
+        <p class="text-muted">Track your orders and their shipping status.</p>
+    </div>
+
+    {% if orders %}
+        <div class="table-responsive shadow rounded-4 overflow-hidden">
+            <table class="table align-middle mb-0 bg-white">
+                <thead class="bg-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Date Ordered</th>
+                        <th>Total Paid</th>
+                        <th>Shipping Date</th>
+                        <th>Status</th>
+                        {% if is_admin %}
+                            <th>Actions</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr class="hover-table-row" onclick="window.location='{% url 'order_detail' order.id %}'" style="cursor:pointer;">
+                        <td class="fw-semibold">{{ order.id }}</td>
+                        <td>{{ order.date_ordered|date:"M d, Y" }}</td>
+                        <td><span class="text-success">${{ order.total_paid }}</span></td>
+                        <td>{{ order.shipping_date|default:"<span class='text-muted'>Not Shipped Yet</span>"|safe }}</td>
+                        <td>
+                            {% if order.is_shipped %}
+                                <span class="badge bg-success rounded-pill">Shipped</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark rounded-pill">Unshipped</span>
+                            {% endif %}
+                        </td>
+                        {% if is_admin %}
+                        <td>
+                            <a href="{% url 'toggle_shipped_status' order.id %}" 
+                               class="btn btn-sm {% if order.is_shipped %}btn-outline-danger{% else %}btn-outline-success{% endif %} rounded-pill">
+                                {% if order.is_shipped %}Mark Unshipped{% else %}Mark Shipped{% endif %}
+                            </a>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center">
+            No orders found.
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

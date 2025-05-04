@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container py-4">
+    <div class="card shadow-sm rounded">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+            <h2 class="m-0"><i class="fas fa-boxes me-2"></i>Inventory Management</h2>
+            <div>
+                <button type="button" class="btn btn-outline-secondary btn-sm me-2">
+                    <i class="fas fa-file-export me-1"></i> Export
+                </button>
+                <button type="button" class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-print me-1"></i> Print
+                </button>
+            </div>
+        </div>
+        
+        <div class="card-body">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <strong>Success!</strong> {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <div class="row mb-4">
+                <div class="col-md-6 col-lg-4">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light"><i class="fas fa-search"></i></span>
+                        <input type="text" id="searchInput" class="form-control" placeholder="Search products...">
+                    </div>
+                </div>
+            </div>
+            
+            <form method="POST">
+                {% csrf_token %}
+                <div class="table-responsive">
+                    <table class="table table-hover" id="inventoryTable">
+                        <thead>
+                            <tr class="bg-light">
+                                <th>Product Name</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Stock Quantity</th>
+                                <th>Sold Quantity</th>
+                                <th>Restock Quantity</th>
+                                <th>Sell Quantity</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for product in products %}
+                                <tr {% if product.stock_quantity < 10 %}class="table-danger"{% endif %}>
+                                    <td><strong>{{ product.name }}</strong></td>
+                                    <td><span class="badge bg-info text-dark">{{ product.category.name }}</span></td>
+                                    <td>${{ product.price }}</td>
+                                    <td>
+                                        <span class="{% if product.stock_quantity < 10 %}text-danger fw-bold{% endif %}">
+                                            {{ product.stock_quantity }}
+                                        </span>
+                                    </td>
+                                    <td>{{ product.sold_quantity }}</td>
+                                    <td>
+                                        <div class="input-group input-group-sm">
+                                            <button type="button" class="btn btn-outline-secondary qty-btn" data-action="decrease" data-input="restock_{{ product.id }}">-</button>
+                                            <input type="number" name="restock_{{ product.id }}" id="restock_{{ product.id }}"
+                                                class="form-control text-center" min="0" step="1" value="0">
+                                            <button type="button" class="btn btn-outline-secondary qty-btn" data-action="increase" data-input="restock_{{ product.id }}">+</button>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="input-group input-group-sm">
+                                            <button type="button" class="btn btn-outline-secondary qty-btn" data-action="decrease" data-input="sell_{{ product.id }}">-</button>
+                                            <input type="number" name="sell_{{ product.id }}" id="sell_{{ product.id }}"
+                                                class="form-control text-center" min="0" step="1" value="0">
+                                            <button type="button" class="btn btn-outline-secondary qty-btn" data-action="increase" data-input="sell_{{ product.id }}">+</button>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <button type="submit" name="save_{{ product.id }}" 
+                                                class="btn btn-primary btn-sm">
+                                            <i class="fas fa-save me-1"></i> Save
+                                        </button>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="8" class="text-center py-4">No products found in the inventory.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-success px-4">
+                        <i class="fas fa-save me-1"></i> Save All Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <div class="card-footer bg-white">
+            <small class="text-muted">Showing {{ products|length }} product{{ products|length|pluralize }}</small>
+        </div>
+    </div>
+</div>
+
+<!-- Add this to your base template if not already included -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<script src="{% static 'store/js/inventory_report.js' %}"></script>
+{% endblock %}

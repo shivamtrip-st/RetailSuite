@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <!-- Cart Summary in center -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm rounded-4 mb-4">
+                <div class="card-body p-4">
+
+                    <h3 class="text-center mb-4 text-primary">Review Your Order</h3>
+
+                    <h5 class="mb-3">Cart Summary</h5>
+                    <div class="mb-4">
+                        {% for item in cart_items %}
+                            <div class="card mb-3 border-0 shadow-sm">
+                                <div class="row g-0 align-items-center">
+                                    <div class="col-3 d-flex justify-content-center p-2">
+                                        <div class="bg-light rounded-3 overflow-hidden" style="width: 70px; height: 70px;">
+                                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="img-fluid h-100 w-100" style="object-fit: cover;">
+                                        </div>
+                                    </div>
+                                    <div class="col-9">
+                                        <div class="card-body py-2">
+                                            <h6 class="card-title mb-1">{{ item.product.name }}</h6>
+                                            <small class="text-muted d-block">Quantity: {{ item.quantity }}</small>
+                                            <small class="text-muted d-block">Price: ${{ item.price }}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <p class="text-center text-muted">No items in your cart.</p>
+                        {% endfor %}
+                    </div>
+
+                    <div class="text-end mb-4">
+                        <h5><strong>Total: ${{ total }}</strong></h5>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="button" id="checkout-button" class="btn btn-success btn-lg">
+                            <i class="fas fa-lock me-2"></i> Pay Now
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Shipping Address on right -->
+        <div class="col-lg-4">
+          <div class="card shadow-sm rounded-4">
+            <div class="card-body p-4">
+                <h5 class="mb-4">Shipping Address</h5>
+        
+                <div class="mb-2">
+                    <strong>Full Name:</strong><br>
+                    <p class="text-muted mb-2">{{ shipping_address.shipping_full_name }}</p>
+                </div>
+        
+                <div class="mb-2">
+                    <strong>Email:</strong><br>
+                    <p class="text-muted mb-2">{{ shipping_address.shipping_email }}</p>
+                </div>
+        
+                <div class="mb-2">
+                    <strong>Address Line 1:</strong><br>
+                    <p class="text-muted mb-2">{{ shipping_address.shipping_address1 }}</p>
+                </div>
+        
+                {% if shipping_address.shipping_address2 %}
+                <div class="mb-2">
+                    <strong>Address Line 2:</strong><br>
+                    <p class="text-muted mb-2">{{ shipping_address.shipping_address2 }}</p>
+                </div>
+                {% endif %}
+        
+                <div class="mb-2">
+                    <strong>City:</strong><br>
+                    <p class="text-muted mb-2">{{ shipping_address.shipping_city }}</p>
+                </div>
+        
+                <div class="mb-2">
+                    <strong>State:</strong><br>
+                    <p class="text-muted mb-2">{{ shipping_address.shipping_state }}</p>
+                </div>
+        
+                <div class="mb-2">
+                    <strong>Zip Code:</strong><br>
+                    <p class="text-muted mb-2">{{ shipping_address.shipping_zipcode }}</p>
+                </div>
+        
+                <div class="mb-2">
+                    <strong>Country:</strong><br>
+                    <p class="text-muted mb-0">{{ shipping_address.shipping_country }}</p>
+                </div>
+        
+            </div>
+        </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stripe JS -->
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    window.stripe_publishable_key = "{{ stripe_publishable_key }}";
+    window.csrf_token = "{{ csrf_token }}";
+    window.create_checkout_url = "{% url 'create_checkout_session' %}";
+</script>
+<script src="{% static 'src/js/checkout_review.js' %}"></script>
+{% endblock %}
